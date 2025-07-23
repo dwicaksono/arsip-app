@@ -47,14 +47,20 @@ export default function ProtectedLayout() {
                 >
                   Upload
                 </Link>
+                <Link
+                  to="/profile"
+                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                >
+                  Profile
+                </Link>
               </div>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:items-center">
               <div className="ml-3 relative">
                 <div className="flex items-center space-x-4">
-                  <span className="text-sm font-medium text-gray-700">
+                  <Link to="/profile" className="text-sm font-medium text-gray-700 hover:text-gray-900">
                     {user?.name}
-                  </span>
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
@@ -106,6 +112,12 @@ export default function ProtectedLayout() {
               className="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
             >
               Upload
+            </Link>
+            <Link
+              to="/profile"
+              className="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+            >
+              Profile
             </Link>
           </div>
           <div className="pt-4 pb-3 border-t border-gray-200">
