@@ -1,12 +1,5 @@
 import { User } from '../db/schema';
-
-type UserPayload = {
-  id: number;
-  email: string;
-  name?: string | null;
-  iat?: number;
-  exp?: number;
-};
+import { UserPayload } from '../auth/utils';
 
 declare module 'fastify' {
   interface FastifyRequest {

@@ -15,6 +15,21 @@ if (!process.env.JWT_SECRET) {
 const JWT_SECRET = process.env.JWT_SECRET;
 const SALT_ROUNDS = 10;
 
+// Define user payload type for JWT
+export interface UserPayload {
+  id: number;
+  email: string;
+  name: string | null;
+  role: 'admin' | 'user' | 'guest';
+}
+
+// Extend FastifyRequest to include user property
+declare module 'fastify' {
+  interface FastifyRequest {
+    user: UserPayload;
+  }
+}
+
 /**
  * Hash a password using bcrypt
  * @param password Plain text password
@@ -40,10 +55,15 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
  * @returns JWT token
  */
 export function generateToken(user: Partial<User>): string {
-  // Remove sensitive information
-  const { password, ...userInfo } = user;
+  // Remove sensitive information and create payload
+  const payload: UserPayload = {
+    id: user.id!,
+    email: user.email!,
+    name: user.name || null,
+    role: user.role || 'user'
+  };
   
-  return jwt.sign(userInfo, JWT_SECRET, {
+  return jwt.sign(payload, JWT_SECRET, {
     expiresIn: '7d' // Token expires in 7 days
   });
 }
@@ -53,9 +73,9 @@ export function generateToken(user: Partial<User>): string {
  * @param token JWT token
  * @returns Decoded token payload or null if invalid
  */
-export function verifyToken(token: string): any {
+export function verifyToken(token: string): UserPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    return jwt.verify(token, JWT_SECRET) as UserPayload;
   } catch (error) {
     return null;
   }
@@ -66,6 +86,6 @@ export function verifyToken(token: string): any {
  * @param request Fastify request object
  * @returns User object from JWT token
  */
-export function getUserFromRequest(request: FastifyRequest): any {
+export function getUserFromRequest(request: FastifyRequest): UserPayload {
   return request.user;
 }

@@ -1,4 +1,8 @@
-import { pgTable, serial, text, timestamp, varchar, integer } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp, varchar, integer, pgEnum, boolean } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+
+// Role enum
+export const roleEnum = pgEnum('role', ['admin', 'user', 'guest']);
 
 // Users table schema
 export const users = pgTable('users', {
@@ -10,6 +14,11 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// User relations
+export const usersRelations = relations(users, ({ many }) => ({
+  documents: many(documents),
+}));
+
 // Documents table schema
 export const documents = pgTable('documents', {
   id: serial('id').primaryKey(),
@@ -20,9 +29,18 @@ export const documents = pgTable('documents', {
   fileType: varchar('file_type', { length: 50 }).notNull(),
   fileSize: integer('file_size').notNull(),
   ocrText: text('ocr_text'),
+  isPublic: boolean('is_public').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+// Document relations
+export const documentsRelations = relations(documents, ({ one }) => ({
+  user: one(users, {
+    fields: [documents.userId],
+    references: [users.id],
+  }),
+}));
 
 // Export types
 export type User = typeof users.$inferSelect;
