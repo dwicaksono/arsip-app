@@ -18,8 +18,26 @@ export default fp(async function(fastify: FastifyInstance) {
     
     // Handle Fastify validation errors (non-Zod)
     if (error.validation && !(error instanceof ZodError)) {
+      console.log('=== FASTIFY VALIDATION ERROR DEBUG ===');
+      console.log('Error message:', error.message);
+      console.log('Validation details:', JSON.stringify(error.validation, null, 2));
+      console.log('Request URL:', request.url);
+      console.log('Request method:', request.method);
+      console.log('=== END VALIDATION ERROR DEBUG ===');
+      
+      // Create a more specific error message based on validation details
+      let specificMessage = 'Validation error';
+      if (error.validation && Array.isArray(error.validation)) {
+        const firstError = error.validation[0];
+        if (firstError && firstError.message) {
+          specificMessage = firstError.message;
+        } else if (firstError && firstError.instancePath) {
+          specificMessage = `Invalid value for field: ${firstError.instancePath}`;
+        }
+      }
+      
       return reply.status(400).send(
-        responseUtils.badRequest('Validation error', { validation: error.validation })
+        responseUtils.badRequest(specificMessage, { validation: error.validation })
       );
     }
     

@@ -2,9 +2,16 @@ import { z } from 'zod';
 
 // Document upload schema
 export const documentUploadSchema = z.object({
-  title: z.string().min(1, { message: 'Title is required' }),
-  description: z.string().optional(),
-  isPublic: z.boolean().optional().default(false),
+  title: z.string()
+    .nonempty('Document title is required')
+    .min(2, { message: 'Document title must be at least 2 characters long' })
+    .max(255, { message: 'Document title cannot exceed 255 characters' }),
+  description: z.string()
+    .max(1000, { message: 'Document description cannot exceed 1000 characters' })
+    .optional(),
+  isPublic: z.boolean()
+    .optional()
+    .default(false),
 });
 
 export type DocumentUploadInput = z.infer<typeof documentUploadSchema>;

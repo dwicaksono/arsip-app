@@ -20,7 +20,6 @@ export interface UserPayload {
   id: number;
   email: string;
   name: string | null;
-  role: 'admin' | 'user' | 'guest';
 }
 
 // Extend FastifyRequest to include user property
@@ -60,7 +59,6 @@ export function generateToken(user: Partial<User>): string {
     id: user.id!,
     email: user.email!,
     name: user.name || null,
-    role: user.role || 'user'
   };
   
   return jwt.sign(payload, JWT_SECRET, {
